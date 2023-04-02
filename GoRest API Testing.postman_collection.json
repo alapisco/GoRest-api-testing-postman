@@ -3207,6 +3207,584 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Create User",
+					"item": [
+						{
+							"name": "Create a new user invalid email",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Creating a unique email with very low chance to be already used\r",
+											"// <date>-<random number>@email.com\r",
+											"const uniqueEmail = `${Date.now()}-${Math.floor(Math.random() * 10000)}@email.com`;\r",
+											"pm.variables.set(\"uniqueEmail\", uniqueEmail);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains expected fields\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData).to.have.property(\"field\");\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response email error response\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData.field).to.be.equals(\"email\");\r",
+											"    pm.expect(jsonData.message).to.be.equals(\"is invalid\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"{{new_user_name}}\",\r\n        \"email\": \"invalid_email\",\r\n        \"gender\": \"{{new_user_gender}}\",\r\n        \"status\": \"{{new_user_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new user empty email",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Creating a unique email with very low chance to be already used\r",
+											"// <date>-<random number>@email.com\r",
+											"const uniqueEmail = `${Date.now()}-${Math.floor(Math.random() * 10000)}@email.com`;\r",
+											"pm.variables.set(\"uniqueEmail\", uniqueEmail);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains expected fields\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData).to.have.property(\"field\");\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response blank email error response\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData.field).to.be.equals(\"email\");\r",
+											"    pm.expect(jsonData.message).to.be.equals(\"can't be blank\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"{{new_user_name}}\",\r\n        \"email\": \"\",\r\n        \"gender\": \"{{new_user_gender}}\",\r\n        \"status\": \"{{new_user_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new user invalid gender",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Creating a unique email with very low chance to be already used\r",
+											"// <date>-<random number>@email.com\r",
+											"const uniqueEmail = `${Date.now()}-${Math.floor(Math.random() * 10000)}@email.com`;\r",
+											"pm.variables.set(\"uniqueEmail\", uniqueEmail);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains expected fields\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData).to.have.property(\"field\");\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response gender error response\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData.field).to.be.equals(\"gender\");\r",
+											"    pm.expect(jsonData.message).to.be.equals(\"can't be blank, can be male of female\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"{{new_user_name}}\",\r\n        \"email\": \"{{uniqueEmail}}\",\r\n        \"gender\": \"invalid_gender\",\r\n        \"status\": \"{{new_user_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new user empty gender",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Creating a unique email with very low chance to be already used\r",
+											"// <date>-<random number>@email.com\r",
+											"const uniqueEmail = `${Date.now()}-${Math.floor(Math.random() * 10000)}@email.com`;\r",
+											"pm.variables.set(\"uniqueEmail\", uniqueEmail);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains expected fields\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData).to.have.property(\"field\");\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response gender error response\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData.field).to.be.equals(\"gender\");\r",
+											"    pm.expect(jsonData.message).to.be.equals(\"can't be blank, can be male of female\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"{{new_user_name}}\",\r\n        \"email\": \"{{uniqueEmail}}\",\r\n        \"gender\": \"\",\r\n        \"status\": \"{{new_user_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new user invalid status",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Creating a unique email with very low chance to be already used\r",
+											"// <date>-<random number>@email.com\r",
+											"const uniqueEmail = `${Date.now()}-${Math.floor(Math.random() * 10000)}@email.com`;\r",
+											"pm.variables.set(\"uniqueEmail\", uniqueEmail);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains expected fields\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData).to.have.property(\"field\");\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response gender error response\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData.field).to.be.equals(\"status\");\r",
+											"    pm.expect(jsonData.message).to.be.equals(\"can't be blank\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"{{new_user_name}}\",\r\n        \"email\": \"{{uniqueEmail}}\",\r\n        \"gender\": \"male\",\r\n        \"status\": \"invalid_status\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new user empty status",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Creating a unique email with very low chance to be already used\r",
+											"// <date>-<random number>@email.com\r",
+											"const uniqueEmail = `${Date.now()}-${Math.floor(Math.random() * 10000)}@email.com`;\r",
+											"pm.variables.set(\"uniqueEmail\", uniqueEmail);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains expected fields\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData).to.have.property(\"field\");\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response email error response\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData.field).to.be.equals(\"status\");\r",
+											"    pm.expect(jsonData.message).to.be.equals(\"can't be blank\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"{{new_user_name}}\",\r\n        \"email\": \"{{uniqueEmail}}\",\r\n        \"gender\": \"male\",\r\n        \"status\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new user with specials character name",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Creating a unique email with very low chance to be already used\r",
+											"// <date>-<random number>@email.com\r",
+											"const uniqueEmail = `${Date.now()}-${Math.floor(Math.random() * 10000)}@email.com`;\r",
+											"pm.variables.set(\"uniqueEmail\", uniqueEmail);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains expected fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"email\");\r",
+											"    pm.expect(jsonData).to.have.property(\"gender\");\r",
+											"    pm.expect(jsonData).to.have.property(\"status\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"*&$&$(#*)@(*)#(*$$\",\r\n        \"email\": \"{{uniqueEmail}}\",\r\n        \"gender\": \"male\",\r\n        \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new user empty name",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Creating a unique email with very low chance to be already used\r",
+											"// <date>-<random number>@email.com\r",
+											"const uniqueEmail = `${Date.now()}-${Math.floor(Math.random() * 10000)}@email.com`;\r",
+											"pm.variables.set(\"uniqueEmail\", uniqueEmail);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains expected fields\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData).to.have.property(\"field\");\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response email error response\", function () {\r",
+											"    var jsonData = pm.response.json()[0];\r",
+											"    pm.expect(jsonData.field).to.be.equals(\"name\");\r",
+											"    pm.expect(jsonData.message).to.be.equals(\"can't be blank\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"\",\r\n        \"email\": \"{{uniqueEmail}}\",\r\n        \"gender\": \"male\",\r\n        \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get User",
+					"item": [
+						{
+							"name": "Get user invalid id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Resource not found message\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.message).to.be.equals(pm.variables.get(\"Resource not found\"));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users/invalid_id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users",
+										"invalid_id"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}

@@ -31,6 +31,7 @@ Tests for the `users endpoint` also include
     -  [Users - Negative Testing](#users---negative-testing)    
         - [Pagination](#pagination)
         - [Search](#pagination)
+        - [Create User](#pagination)
 
 
 
@@ -142,3 +143,7 @@ Contains tests for invalid input or unexpected user behavior
 Contains negative tests for users search by all field and also
 not existing fields
 
+
+### Create User
+
+Contains negative tests for empty, invalid values, or special characters used when creating a user
