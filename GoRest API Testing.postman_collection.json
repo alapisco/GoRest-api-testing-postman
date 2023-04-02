@@ -1858,6 +1858,270 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "Request page 0",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
+													"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
+													"\r",
+													"    pm.expect(page).to.equal(1);\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?page=0",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "0"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Request negative page",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
+													"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
+													"\r",
+													"    pm.expect(page).to.equal(1);\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?page=-1",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "-1"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Request invalid page",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
+													"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
+													"\r",
+													"    pm.expect(page).to.equal(1);\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?page=abc",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "abc"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Request empty page",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
+													"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
+													"\r",
+													"    pm.expect(page).to.equal(1);\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?page=",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						}

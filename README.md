@@ -26,6 +26,10 @@ Tests for the `users endpoint` also include
         - [Posts CRUD](#posts-crud)
         - [Comments CRUD](#comments-crud)
         - [Todos CRUD](#todos-crud)
+        - [Users Pagination](#todos-crud)
+    -  [Negative Testing](#ne)    
+         - [Users](#todos-crud)
+             - [Pagination](#todos-crud)
 
 
 
@@ -106,3 +110,19 @@ that do the following operations
  - Deletes todo
  - Checks deleted todo 
 
+### Users Pagination
+
+Contains pagination `header tests`, and tests for parameters
+`page` and `per_page`
+
+### Negative Testing
+
+Contains tests for invalid input or unexpected user behavior
+
+### Users - Pagination
+
+- Request with page that exceeds the total pages available
+- Request with page 0
+- Request with negative page
+- Request with invalid page (ex page=abc)
+- Request with empty page
