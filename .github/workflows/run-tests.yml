@@ -70,4 +70,4 @@ jobs:
         
     # Show the report link   
       - name : Report URL
-        run: echo "https://alapisco.github.io/GoRest-test/${{ github.run_number }}"          
+        run: echo "https://alapisco.github.io/GoRest-api-testing-postman/${{ github.run_number }}"          
