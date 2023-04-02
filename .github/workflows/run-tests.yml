@@ -1,0 +1,73 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Run API Tests CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+         node-version: 18
+      - name: Intall Newman
+        run: | 
+         npm install -g newman 
+         npm install -g newman-reporter-htmlextra
+      - name: Run Postman Collection
+        run:
+         newman run 'GoRest API Testing.postman_collection.json' --reporters cli,htmlextra --reporter-htmlextra-export results/index.html
+      - name: Output results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test Execution Report
+          path: results
+          
+      
+    # The next steps will deploy the generated allure report to github pages
+    
+      - name: Get reports history
+        uses: actions/checkout@v2
+        if: always()
+        continue-on-error: true
+        with:
+         ref: gh-pages
+         path: gh-pages
+
+      - name: Test marketplace action
+        uses: PavanMudigonda/html-reporter-github-pages@v1.0
+        id: test-report
+        with:
+         test_results: results
+         gh_pages: gh-pages
+         results_history: results-history
+
+      - name: Publish Github Pages
+        if: ${{ always() }}
+        uses: peaceiris/actions-gh-pages@v3.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: results-history
+          keep_files: true 
+        
+    # Show the report link   
+      - name : Report URL
+        run: echo "https://alapisco.github.io/GoRest-test/${{ github.run_number }}"          
