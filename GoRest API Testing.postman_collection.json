@@ -416,8 +416,8 @@
 											"// Storing the assigned userid in a variable\r",
 											"var jsonData = pm.response.json();\r",
 											"var userId = jsonData.id;\r",
-											"console.log(userId)\r",
-											"pm.environment.set(\"user_id\", userId);"
+											"pm.environment.set(\"user_id\", userId);\r",
+											"pm.environment.set(\"user_email\",pm.variables.get(\"uniqueEmail\"));"
 										],
 										"type": "text/javascript"
 									}
@@ -1726,84 +1726,753 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Users - Search",
+					"item": [
+						{
+							"name": "Search users by name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Search results contain the requested name value\", function () {\r",
+											"    const requestedName = pm.request.url.query.get(\"name\");\r",
+											"    const jsonData = pm.response.json();\r",
+											"    \r",
+											"    jsonData.forEach(user => {\r",
+											"        pm.expect(user.name.toLowerCase()).to.include(requestedName.toLowerCase());\r",
+											"    });\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?name={{new_user_name}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "{{new_user_name}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search users by id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Check ID value is the same on search\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    const user_id = pm.variables.get(\"user_id\");\r",
+											"    pm.expect(jsonData[0].id).to.equal(user_id);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains only one result\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an('array').that.has.lengthOf(1);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?id={{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "{{user_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search users by email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Check email value is the same on search\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    const user_email = pm.variables.get(\"user_email\");\r",
+											"    pm.expect(jsonData[0].email).to.equal(user_email);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains only one result\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an('array').that.has.lengthOf(1);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?email={{user_email}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "email",
+											"value": "{{user_email}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search male users",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Search results contain the requested name value\", function () {\r",
+											"    const requestedGender = pm.request.url.query.get(\"gender\");\r",
+											"    const jsonData = pm.response.json();\r",
+											"    \r",
+											"    jsonData.forEach(user => {\r",
+											"        pm.expect(user.gender.toLowerCase()).to.include(requestedGender.toLowerCase());\r",
+											"    });\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?gender=male",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "gender",
+											"value": "male"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search female users",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Search results contain the requested name value\", function () {\r",
+											"    const requestedGender = pm.request.url.query.get(\"gender\");\r",
+											"    const jsonData = pm.response.json();\r",
+											"    \r",
+											"    jsonData.forEach(user => {\r",
+											"        pm.expect(user.gender.toLowerCase()).to.include(requestedGender.toLowerCase());\r",
+											"    });\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?gender=demale",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "gender",
+											"value": "demale"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search active users",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Search results contain the requested name value\", function () {\r",
+											"    const requestedGender = pm.request.url.query.get(\"status\");\r",
+											"    const jsonData = pm.response.json();\r",
+											"    \r",
+											"    jsonData.forEach(user => {\r",
+											"        pm.expect(user.status.toLowerCase()).to.include(requestedGender.toLowerCase());\r",
+											"    });\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?status=active",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "active"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search inactive",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Search results contain the requested name value\", function () {\r",
+											"    const requestedGender = pm.request.url.query.get(\"status\");\r",
+											"    const jsonData = pm.response.json();\r",
+											"    \r",
+											"    jsonData.forEach(user => {\r",
+											"        pm.expect(user.status.toLowerCase()).to.include(requestedGender.toLowerCase());\r",
+											"    });\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?status=inactive",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "inactive"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		},
 		{
-			"name": "Negative Testing",
+			"name": "Users - Negative Testing",
 			"item": [
 				{
-					"name": "Users",
+					"name": "Pagination",
 					"item": [
 						{
-							"name": "Pagination",
+							"name": "Get total pages",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var totalPages = parseInt(pm.response.headers.get(\"X-Pagination-Pages\"));\r",
+											"\r",
+											"var exceeded_page_number = totalPages + 1;\r",
+											"pm.environment.set(\"exceeded_page_number\", exceeded_page_number);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Request page number > max",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Requesting a page number greater than total pages returns an empty array\", function () {\r",
+											"    const totalPages = parseInt(pm.response.headers.get(\"X-Pagination-Pages\"));\r",
+											"    const requestedPage = parseInt(pm.request.url.query.get(\"page\"));\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an('array').that.is.empty;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?page={{exceeded_page_number}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "{{exceeded_page_number}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Request page 0",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
+											"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
+											"\r",
+											"    pm.expect(page).to.equal(1);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?page=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Request negative page",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
+											"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
+											"\r",
+											"    pm.expect(page).to.equal(1);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?page=-1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "-1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Request invalid page",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
+											"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
+											"\r",
+											"    pm.expect(page).to.equal(1);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?page=abc",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "abc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Request empty page",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
+											"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
+											"\r",
+											"    pm.expect(page).to.equal(1);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?page=",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Search",
+					"item": [
+						{
+							"name": "By Name",
 							"item": [
 								{
-									"name": "Get total pages",
+									"name": "Search users with empty name",
 									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"var totalPages = parseInt(pm.response.headers.get(\"X-Pagination-Pages\"));\r",
-													"\r",
-													"var exceeded_page_number = totalPages + 1;\r",
-													"pm.environment.set(\"exceeded_page_number\", exceeded_page_number);"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"method": "GET",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{base_url}}/public/v2/users",
-											"host": [
-												"{{base_url}}"
-											],
-											"path": [
-												"public",
-												"v2",
-												"users"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Request page number > max",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
 										{
 											"listen": "test",
 											"script": {
@@ -1812,11 +2481,99 @@
 													"    pm.response.to.have.status(200);\r",
 													"});\r",
 													"\r",
-													"pm.test(\"Requesting a page number greater than total pages returns an empty array\", function () {\r",
-													"    const totalPages = parseInt(pm.response.headers.get(\"X-Pagination-Pages\"));\r",
-													"    const requestedPage = parseInt(pm.request.url.query.get(\"page\"));\r",
+													"pm.test(\"Searching with an empty name value returns all results\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+													"    \r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?name=",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "name",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search users with special chars",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with special characters value returns all results\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+													"    \r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?name=#$%%#",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "name",
+													"value": ""
+												}
+											],
+											"hash": "$%%#"
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search users with non existing name",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with non-existent values returns an empty array\", function () {\r",
 													"    const jsonData = pm.response.json();\r",
 													"    pm.expect(jsonData).to.be.an('array').that.is.empty;\r",
+													"    \r",
 													"});\r",
 													""
 												],
@@ -1824,23 +2581,11 @@
 											}
 										}
 									],
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
 									"request": {
 										"method": "GET",
 										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
 										"url": {
-											"raw": "{{base_url}}/public/v2/users?page={{exceeded_page_number}}",
+											"raw": "{{base_url}}/public/v2/users?name=this-user-name-doesnt=exist",
 											"host": [
 												"{{base_url}}"
 											],
@@ -1851,272 +2596,8 @@
 											],
 											"query": [
 												{
-													"key": "page",
-													"value": "{{exceeded_page_number}}"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Request page 0",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Status code is 200\", function () {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});\r",
-													"\r",
-													"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
-													"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
-													"\r",
-													"    pm.expect(page).to.equal(1);\r",
-													"});\r",
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"method": "GET",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{base_url}}/public/v2/users?page=0",
-											"host": [
-												"{{base_url}}"
-											],
-											"path": [
-												"public",
-												"v2",
-												"users"
-											],
-											"query": [
-												{
-													"key": "page",
-													"value": "0"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Request negative page",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Status code is 200\", function () {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});\r",
-													"\r",
-													"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
-													"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
-													"\r",
-													"    pm.expect(page).to.equal(1);\r",
-													"});\r",
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"method": "GET",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{base_url}}/public/v2/users?page=-1",
-											"host": [
-												"{{base_url}}"
-											],
-											"path": [
-												"public",
-												"v2",
-												"users"
-											],
-											"query": [
-												{
-													"key": "page",
-													"value": "-1"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Request invalid page",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Status code is 200\", function () {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});\r",
-													"\r",
-													"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
-													"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
-													"\r",
-													"    pm.expect(page).to.equal(1);\r",
-													"});\r",
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"method": "GET",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{base_url}}/public/v2/users?page=abc",
-											"host": [
-												"{{base_url}}"
-											],
-											"path": [
-												"public",
-												"v2",
-												"users"
-											],
-											"query": [
-												{
-													"key": "page",
-													"value": "abc"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Request empty page",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Status code is 200\", function () {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});\r",
-													"\r",
-													"pm.test(\"Requesting a page number 0 returns results for page 1\", function () {\r",
-													"   var page = parseInt(pm.response.headers.get(\"x-pagination-page\"));\r",
-													"\r",
-													"    pm.expect(page).to.equal(1);\r",
-													"});\r",
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"method": "GET",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{base_url}}/public/v2/users?page=",
-											"host": [
-												"{{base_url}}"
-											],
-											"path": [
-												"public",
-												"v2",
-												"users"
-											],
-											"query": [
-												{
-													"key": "page",
-													"value": ""
+													"key": "name",
+													"value": "this-user-name-doesnt=exist"
 												}
 											]
 										}
@@ -2124,6 +2605,606 @@
 									"response": []
 								}
 							]
+						},
+						{
+							"name": "By ID",
+							"item": [
+								{
+									"name": "Search users with empty id",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with an empty name value returns all results\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+													"    \r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?id=",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "id",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search by id with special chars",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with special characters value returns all results\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+													"    \r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?id=#$%%#",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "id",
+													"value": ""
+												}
+											],
+											"hash": "$%%#"
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search users with non existing id",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with non-existent values returns an empty array\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.empty;\r",
+													"    \r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?id=this-user-id-doesnt-exist",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "id",
+													"value": "this-user-id-doesnt-exist"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "By Email",
+							"item": [
+								{
+									"name": "Search users with empty email",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with an empty name value returns all results\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+													"    \r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?email=",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search by email with special chars",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with special characters value returns all results\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+													"    \r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?email=#$%%#",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": ""
+												}
+											],
+											"hash": "$%%#"
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search users with non existing email",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with non-existent values returns an empty array\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.empty;\r",
+													"    \r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?id=this-user-email-doesnt-exist@gmail.com",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "id",
+													"value": "this-user-email-doesnt-exist@gmail.com"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "By Gender",
+							"item": [
+								{
+									"name": "Search users with empty gender",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with an empty name value returns all results\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+													"    \r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?gender=",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "gender",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search gender with special chars",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with special characters value returns all results\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+													"    \r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?gender=#$%%#",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "gender",
+													"value": ""
+												}
+											],
+											"hash": "$%%#"
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search users with non existing gender",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with non-existent values returns an empty array\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.empty;\r",
+													"    \r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?gender=this-gender-doesnt-exist",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "gender",
+													"value": "this-gender-doesnt-exist"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "By Status",
+							"item": [
+								{
+									"name": "Search users with empty status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with an empty name value returns all results\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+													"    \r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?status=",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "status",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search status with special chars",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with special characters value returns all results\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+													"    \r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?status=#$%%#",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "status",
+													"value": ""
+												}
+											],
+											"hash": "$%%#"
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search users with non existing status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Searching with non-existent values returns an empty array\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.empty;\r",
+													"    \r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?gender=this-status-doesnt-exist",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "gender",
+													"value": "this-status-doesnt-exist"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Search by not existing field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Searching by invalid field returns all results\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;\r",
+											"    \r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?invalidField=value",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "invalidField",
+											"value": "value"
+										}
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				}

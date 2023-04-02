@@ -26,10 +26,11 @@ Tests for the `users endpoint` also include
         - [Posts CRUD](#posts-crud)
         - [Comments CRUD](#comments-crud)
         - [Todos CRUD](#todos-crud)
-        - [Users Pagination](#todos-crud)
-    -  [Negative Testing](#ne)    
-         - [Users](#todos-crud)
-             - [Pagination](#todos-crud)
+        - [Users Pagination](#users-pagination)
+        - [Users Search](#users-search)
+    -  [Users - Negative Testing](#users---negative-testing)    
+        - [Pagination](#pagination)
+        - [Search](#pagination)
 
 
 
@@ -115,14 +116,29 @@ that do the following operations
 Contains pagination `header tests`, and tests for parameters
 `page` and `per_page`
 
-### Negative Testing
+### Users Search
+
+Contains tests for requests that:
+- search users by name
+- search user by id
+- search user by email
+- search users by gender
+- search users by status
+
+### Users - Negative Testing
 
 Contains tests for invalid input or unexpected user behavior
 
-### Users - Pagination
+### Pagination
 
 - Request with page that exceeds the total pages available
 - Request with page 0
 - Request with negative page
 - Request with invalid page (ex page=abc)
 - Request with empty page
+
+### Search
+
+Contains negative tests for users search by all field and also
+not existing fields
+
