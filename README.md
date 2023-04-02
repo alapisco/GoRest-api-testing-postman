@@ -18,9 +18,10 @@ Tests for the `users endpoint` also include
 
 ## Table of Contents
 
-1. [Importing the Postman Collection](#importing-the-postman-collection)
-2. [Running the Tests](#running-the-tests)
-3. [The GoRest API Testing collection](#the-gorest-api-testing-collection)
+1. [Running the Tests](#running-the-tests)
+    -  [Postman](#postman)
+    -  [Newman](#newman)
+2. [The GoRest API Testing collection](#the-gorest-api-testing-collection)
     -  [Functional Testing](#functional-testing)
         - [Users CRUD](#users-crud)
         - [Posts CRUD](#posts-crud)
@@ -33,25 +34,60 @@ Tests for the `users endpoint` also include
         - [Search](#pagination)
         - [Create User](#pagination)
 
+## Running the tests
+
+### Postman
+
+You can use the `web version` or the `Desktop application` of `Postman`
+
+For details on how to install Postman, go to the [Official Documentation](https://learning.postman.com/docs/getting-started/installation-and-updates/)
 
 
-## Importing the Postman Collection
+### Importing the Postman Collection
+
 To import the exported collection file into Postman, follow these steps:
 
-Open Postman.
-
+- Open Postman.
 - In the top-left corner, click the "Import" button.
 - A new dialog will appear. Click "Upload Files" and select the exported collection file (it should have a .json extension) from your computer, or drag and drop the file into the dialog box.
 - After the file is uploaded, Postman will display `GoRest API Testing` , under the "Collections" tab.
 
 
-## Running the Tests
+### Running the Tests
 To run the tests in the imported Postman collection, follow these steps:
 
 - Select a request from the collection in the left sidebar.
 - Click the "Run" option in the `...` button 
 - Click the `Run GoRest API Testing` button
 
+### Newman
+
+`Newman` is  Node JS command line applicaiton that allows running `Postman collections` from the console in headless mode.
+
+To install Newman on your OS refer to the [Official Documentation](https://learning.postman.com/docs/collections/using-newman-cli/installing-running-newman/)
+
+### Running the Tests
+
+Execute the following command
+
+```bash
+newman run <path-to-postman-collection-file>
+```
+
+Example, form the project root dir:
+
+```bash
+ newman run '.\GoRest API Testing.postman_collection.json'
+```
+
+You will see the enponts being executed sequentially , along with their tests, and tests status.
+
+
+The results of all tests and requests can be exported into a file. Use the JSON reporter and a file name to save the output into a file.
+
+```bash
+newman run mycollection.json --reporters cli,json --reporter-json-export outputfile.json
+```
 
 
 ## The `GoRest API Testing` collection
