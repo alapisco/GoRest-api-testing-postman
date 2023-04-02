@@ -1,0 +1,1724 @@
+{
+	"info": {
+		"_postman_id": "3bb549b6-1bc9-467d-8954-9b2c368952b7",
+		"name": "GoRest API Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2596395"
+	},
+	"item": [
+		{
+			"name": "Functional Testing",
+			"item": [
+				{
+					"name": "Users CRUD",
+					"item": [
+						{
+							"name": "Create a new user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Creating a unique email with very low chance to be already used\r",
+											"// <date>-<random number>@email.com\r",
+											"const uniqueEmail = `${Date.now()}-${Math.floor(Math.random() * 10000)}@email.com`;\r",
+											"pm.variables.set(\"uniqueEmail\", uniqueEmail);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"email\");\r",
+											"    pm.expect(jsonData).to.have.property(\"gender\");\r",
+											"    pm.expect(jsonData).to.have.property(\"status\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the values we sent\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.name).to.be.equals(pm.variables.get(\"new_user_name\"));\r",
+											"    pm.expect(jsonData.email).to.be.equals(pm.variables.get(\"uniqueEmail\"));\r",
+											"    pm.expect(jsonData.gender).to.be.equals(pm.variables.get(\"new_user_gender\"));\r",
+											"    pm.expect(jsonData.status).to.be.equals(pm.variables.get(\"new_user_status\"));\r",
+											"});\r",
+											"\r",
+											"// Storing the assigned userid in a variable\r",
+											"var jsonData = pm.response.json();\r",
+											"var userId = jsonData.id;\r",
+											"console.log(userId)\r",
+											"pm.environment.set(\"user_id\", userId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"{{new_user_name}}\",\r\n        \"email\": \"{{uniqueEmail}}\",\r\n        \"gender\": \"{{new_user_gender}}\",\r\n        \"status\": \"{{new_user_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get user details",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"email\");\r",
+											"    pm.expect(jsonData).to.have.property(\"gender\");\r",
+											"    pm.expect(jsonData).to.have.property(\"status\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the same user id , and other values that were provided\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.id).to.be.equals(pm.variables.get(\"user_id\"));\r",
+											"    pm.expect(jsonData.name).to.be.equals(pm.variables.get(\"new_user_name\"));\r",
+											"    pm.expect(jsonData.email).to.be.equals(pm.variables.get(\"uniqueEmail\"));\r",
+											"    pm.expect(jsonData.gender).to.be.equals(pm.variables.get(\"new_user_gender\"));\r",
+											"    pm.expect(jsonData.status).to.be.equals(pm.variables.get(\"new_user_status\"));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update user details",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Create new email for user\r",
+											"const new_email = `robby@email.com`;\r",
+											"pm.variables.set(\"new_email\", new_email);\r",
+											"\r",
+											"// Create new name for user\r",
+											"const new_name = `Robby Desks`;\r",
+											"pm.variables.set(\"new_name\", new_name);\r",
+											"\r",
+											"// Create new gender for user\r",
+											"const new_gender = `female`;\r",
+											"pm.variables.set(\"new_gender\", new_gender);\r",
+											"\r",
+											"// Create new status for user\r",
+											"const new_status = `inactive`;\r",
+											"pm.variables.set(\"new_status\", new_status);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the values we sent\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.name).to.be.equals(pm.variables.get(\"new_name\"));\r",
+											"    pm.expect(jsonData.email).to.be.equals(pm.variables.get(\"new_email\"));\r",
+											"    pm.expect(jsonData.gender).to.be.equals(pm.variables.get(\"new_gender\"));\r",
+											"    pm.expect(jsonData.status).to.be.equals(pm.variables.get(\"new_status\"));\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"{{new_name}}\",\r\n        \"email\": \"{{new_email}}\",\r\n        \"gender\": \"{{new_gender}}\",\r\n        \"status\": \"{{new_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update user details",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Create new email for user\r",
+											"const new_email = `tobby@email.com`;\r",
+											"pm.variables.set(\"new_email\", new_email);\r",
+											"\r",
+											"// Create new name for user\r",
+											"const new_name = `Tobby Counters`;\r",
+											"pm.variables.set(\"new_name\", new_name);\r",
+											"\r",
+											"// Create new gender for user\r",
+											"const new_gender = `male`;\r",
+											"pm.variables.set(\"new_gender\", new_gender);\r",
+											"\r",
+											"// Create new status for user\r",
+											"const new_status = `active`;\r",
+											"pm.variables.set(\"new_status\", new_status);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the values we sent\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.name).to.be.equals(pm.variables.get(\"new_name\"));\r",
+											"    pm.expect(jsonData.email).to.be.equals(pm.variables.get(\"new_email\"));\r",
+											"    pm.expect(jsonData.gender).to.be.equals(pm.variables.get(\"new_gender\"));\r",
+											"    pm.expect(jsonData.status).to.be.equals(pm.variables.get(\"new_status\"));\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"{{new_name}}\",\r\n        \"email\": \"{{new_email}}\",\r\n        \"gender\": \"{{new_gender}}\",\r\n        \"status\": \"{{new_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get user details",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains message field\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains message field\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Validate error message\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.message).to.be.equal(\"Resource not found\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/users/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Posts CRUD",
+					"item": [
+						{
+							"name": "Create a new user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Creating a unique email with very low chance to be already used\r",
+											"// <date>-<random number>@email.com\r",
+											"const uniqueEmail = `${Date.now()}-${Math.floor(Math.random() * 10000)}@email.com`;\r",
+											"pm.variables.set(\"uniqueEmail\", uniqueEmail);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"email\");\r",
+											"    pm.expect(jsonData).to.have.property(\"gender\");\r",
+											"    pm.expect(jsonData).to.have.property(\"status\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the values we sent\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.name).to.be.equals(pm.variables.get(\"new_user_name\"));\r",
+											"    pm.expect(jsonData.email).to.be.equals(pm.variables.get(\"uniqueEmail\"));\r",
+											"    pm.expect(jsonData.gender).to.be.equals(pm.variables.get(\"new_user_gender\"));\r",
+											"    pm.expect(jsonData.status).to.be.equals(pm.variables.get(\"new_user_status\"));\r",
+											"});\r",
+											"\r",
+											"// Storing the assigned userid in a variable\r",
+											"var jsonData = pm.response.json();\r",
+											"var userId = jsonData.id;\r",
+											"console.log(userId)\r",
+											"pm.environment.set(\"user_id\", userId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"{{new_user_name}}\",\r\n        \"email\": \"{{uniqueEmail}}\",\r\n        \"gender\": \"{{new_user_gender}}\",\r\n        \"status\": \"{{new_user_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new post",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"user_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"title\");\r",
+											"    pm.expect(jsonData).to.have.property(\"body\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the values we sent\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.user_id).to.be.equals(pm.variables.get(\"user_id\"));\r",
+											"    pm.expect(jsonData.title).to.be.equals(pm.variables.get(\"new_post_title\"));\r",
+											"    pm.expect(jsonData.body).to.be.equals(pm.variables.get(\"new_post_body\"));\r",
+											"});\r",
+											"\r",
+											"// Storing the assigned id in a variable\r",
+											"var jsonData = pm.response.json();\r",
+											"var postId = jsonData.id;\r",
+											"console.log(postId)\r",
+											"pm.environment.set(\"post_id\", postId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"user_id\": {{user_id}},\r\n    \"title\": \"{{new_post_title}}\",\r\n    \"body\": \"{{new_post_body}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/posts",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"posts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get post",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"user_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"title\");\r",
+											"    pm.expect(jsonData).to.have.property(\"body\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the same user id , and other values that were provided\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.id).to.be.equals(pm.variables.get(\"post_id\"));\r",
+											"    pm.expect(jsonData.user_id).to.be.equals(pm.variables.get(\"user_id\"));\r",
+											"    pm.expect(jsonData.title).to.be.equals(pm.variables.get(\"new_post_title\"));\r",
+											"    pm.expect(jsonData.body).to.be.equals(pm.variables.get(\"new_post_body\"));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/posts/{{post_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"posts",
+										"{{post_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update post",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"user_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"title\");\r",
+											"    pm.expect(jsonData).to.have.property(\"body\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the same post id, user id , and other values that were provided\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.id).to.be.equals(pm.variables.get(\"post_id\"));\r",
+											"    pm.expect(jsonData.user_id).to.be.equals(pm.variables.get(\"user_id\"));\r",
+											"    pm.expect(jsonData.title).to.be.equals(pm.variables.get(\"new_title\"));\r",
+											"    pm.expect(jsonData.body).to.be.equals(pm.variables.get(\"new_body\"));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Create new_title for post\r",
+											"const new_title = `New Title`;\r",
+											"pm.variables.set(\"new_title\", new_title);\r",
+											"\r",
+											"// Create new_body for post\r",
+											"const new_body = `New Body`;\r",
+											"pm.variables.set(\"new_body\", new_body);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"{{new_title}}\",\r\n    \"body\": \"{{new_body}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/posts/{{post_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"posts",
+										"{{post_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update post",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"user_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"title\");\r",
+											"    pm.expect(jsonData).to.have.property(\"body\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the same post id, user id , and other values that were provided\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.id).to.be.equals(pm.variables.get(\"post_id\"));\r",
+											"    pm.expect(jsonData.user_id).to.be.equals(pm.variables.get(\"user_id\"));\r",
+											"    pm.expect(jsonData.title).to.be.equals(pm.variables.get(\"new_title\"));\r",
+											"    pm.expect(jsonData.body).to.be.equals(pm.variables.get(\"new_body\"));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Create new_title for post\r",
+											"const new_title = `New Title 2`;\r",
+											"pm.variables.set(\"new_title\", new_title);\r",
+											"\r",
+											"// Create new_body for post\r",
+											"const new_body = `New Body 2`;\r",
+											"pm.variables.set(\"new_body\", new_body);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"{{new_title}}\",\r\n    \"body\": \"{{new_body}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/posts/{{post_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"posts",
+										"{{post_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete post",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/posts/{{post_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"posts",
+										"{{post_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Post",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains message field\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains message field\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Validate error message\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.message).to.be.equal(\"Resource not found\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/posts/{{post_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"posts",
+										"{{post_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Comments CRUD",
+					"item": [
+						{
+							"name": "Create a new post",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"user_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"title\");\r",
+											"    pm.expect(jsonData).to.have.property(\"body\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the values we sent\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.user_id).to.be.equals(pm.variables.get(\"user_id\"));\r",
+											"    pm.expect(jsonData.title).to.be.equals(pm.variables.get(\"new_post_title\"));\r",
+											"    pm.expect(jsonData.body).to.be.equals(pm.variables.get(\"new_post_body\"));\r",
+											"});\r",
+											"\r",
+											"// Storing the assigned id in a variable\r",
+											"var jsonData = pm.response.json();\r",
+											"var postId = jsonData.id;\r",
+											"console.log(postId)\r",
+											"pm.environment.set(\"post_id\", postId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"user_id\": {{user_id}},\r\n    \"title\": \"{{new_post_title}}\",\r\n    \"body\": \"{{new_post_body}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/posts",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"posts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new comment",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"post_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"email\");\r",
+											"    pm.expect(jsonData).to.have.property(\"body\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the values we sent\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.post_id).to.be.equals(pm.variables.get(\"post_id\"));\r",
+											"    pm.expect(jsonData.name).to.be.equals(pm.variables.get(\"new_comment_name\"));\r",
+											"    pm.expect(jsonData.email).to.be.equals(pm.variables.get(\"new_comment_email\"));\r",
+											"    pm.expect(jsonData.body).to.be.equals(pm.variables.get(\"new_comment_body\"));\r",
+											"});\r",
+											"\r",
+											"// Storing the assigned id in a variable\r",
+											"var jsonData = pm.response.json();\r",
+											"var comment_id = jsonData.id;\r",
+											"console.log(comment_id)\r",
+											"pm.environment.set(\"comment_id\", comment_id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"post_id\": {{post_id}},\r\n    \"name\": \"{{new_comment_name}}\",\r\n    \"email\": \"{{new_comment_email}}\",\r\n    \"body\": \"{{new_comment_body}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/comments",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"comments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get comment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"post_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"email\");\r",
+											"    pm.expect(jsonData).to.have.property(\"body\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the same post id, comment id,  and other values that were provided\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.id).to.be.equals(pm.variables.get(\"comment_id\"));\r",
+											"    pm.expect(jsonData.post_id).to.be.equals(pm.variables.get(\"post_id\"));\r",
+											"    pm.expect(jsonData.name).to.be.equals(pm.variables.get(\"new_comment_name\"));\r",
+											"    pm.expect(jsonData.email).to.be.equals(pm.variables.get(\"new_comment_email\"));\r",
+											"    pm.expect(jsonData.body).to.be.equals(pm.variables.get(\"new_comment_body\"));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/comments/{{comment_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"comments",
+										"{{comment_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update comment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"post_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"email\");\r",
+											"    pm.expect(jsonData).to.have.property(\"body\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the same post id, comment id,  and other values that were provided\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.id).to.be.equals(pm.variables.get(\"comment_id\"));\r",
+											"    pm.expect(jsonData.post_id).to.be.equals(pm.variables.get(\"post_id\"));\r",
+											"    pm.expect(jsonData.name).to.be.equals(pm.variables.get(\"new_name\"));\r",
+											"    pm.expect(jsonData.email).to.be.equals(pm.variables.get(\"new_email\"));\r",
+											"    pm.expect(jsonData.body).to.be.equals(pm.variables.get(\"new_body\"));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Create new_name for comment\r",
+											"const new_name = `Hector Peralta`;\r",
+											"pm.variables.set(\"new_name\", new_name);\r",
+											"\r",
+											"// Create new_email for comment\r",
+											"const new_email = `peralta@mail.com`;\r",
+											"pm.variables.set(\"new_email\", new_email);\r",
+											"\r",
+											"// Create new_body for comment\r",
+											"const new_body = `I like tacos`;\r",
+											"pm.variables.set(\"new_body\", new_body);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{new_name}}\",\r\n    \"email\": \"{{new_email}}\",\r\n    \"body\": \"{{new_body}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/comments/{{comment_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"comments",
+										"{{comment_id}}"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete comment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/comments/{{comment_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"comments",
+										"{{comment_id}}"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get comment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains message field\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains message field\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Validate error message\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.message).to.be.equal(\"Resource not found\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/comments/{{comment_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"comments",
+										"{{comment_id}}"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Todos CRUD",
+					"item": [
+						{
+							"name": "Create a new todo",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"user_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"title\");\r",
+											"    pm.expect(jsonData).to.have.property(\"due_on\");\r",
+											"    pm.expect(jsonData).to.have.property(\"status\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the values we sent\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.user_id).to.be.equals(pm.variables.get(\"user_id\"));\r",
+											"    pm.expect(jsonData.title).to.be.equals(pm.variables.get(\"new_todo_title\"));\r",
+											"    pm.expect(jsonData.due_on).to.be.equals(pm.variables.get(\"new_todo_due_on\"));\r",
+											"    pm.expect(jsonData.status).to.be.equals(pm.variables.get(\"new_todo_status\"));\r",
+											"});\r",
+											"\r",
+											"// Storing the assigned id in a variable\r",
+											"var jsonData = pm.response.json();\r",
+											"var todo_id = jsonData.id;\r",
+											"console.log(todo_id)\r",
+											"pm.environment.set(\"todo_id\", todo_id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"user_id\": {{user_id}},\r\n    \"title\": \"{{new_todo_title}}\",\r\n    \"due_on\": \"{{new_todo_due_on}}\",\r\n    \"status\": \"{{new_todo_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/todos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"todos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get todo",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"user_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"title\");\r",
+											"    pm.expect(jsonData).to.have.property(\"due_on\");\r",
+											"    pm.expect(jsonData).to.have.property(\"status\");\r",
+											"\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the same user id , and other values that were provided\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.id).to.be.equals(pm.variables.get(\"todo_id\"));\r",
+											"    pm.expect(jsonData.user_id).to.be.equals(pm.variables.get(\"user_id\"));\r",
+											"    pm.expect(jsonData.title).to.be.equals(pm.variables.get(\"new_todo_title\"));\r",
+											"    pm.expect(jsonData.due_on).to.be.equals(pm.variables.get(\"new_todo_due_on\"));\r",
+											"    pm.expect(jsonData.status).to.be.equals(pm.variables.get(\"new_todo_status\"));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/todos/{{todo_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"todos",
+										"{{todo_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update todo",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"user_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"title\");\r",
+											"    pm.expect(jsonData).to.have.property(\"due_on\");\r",
+											"    pm.expect(jsonData).to.have.property(\"status\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the same post id, user id , and other values that were provided\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.id).to.be.equals(pm.variables.get(\"todo_id\"));\r",
+											"    pm.expect(jsonData.user_id).to.be.equals(pm.variables.get(\"user_id\"));\r",
+											"    pm.expect(jsonData.title).to.be.equals(pm.variables.get(\"new_title\"));\r",
+											"    pm.expect(jsonData.due_on).to.be.equals(pm.variables.get(\"new_due_on\"));\r",
+											"    pm.expect(jsonData.status).to.be.equals(pm.variables.get(\"new_status\"));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Create new_title for todo\r",
+											"const new_title = `Buy Groceries`;\r",
+											"pm.variables.set(\"new_title\", new_title);\r",
+											"\r",
+											"// Create new_due_on for todo\r",
+											"const new_due_on = `2023-10-10T00:00:00.000+05:30`;\r",
+											"pm.variables.set(\"new_due_on\", new_due_on);\r",
+											"\r",
+											"// Create new_status for todo\r",
+											"const new_status = `completed`;\r",
+											"pm.variables.set(\"new_status\", new_status);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"{{new_title}}\",\r\n    \"due_on\": \"{{new_due_on}}\",\r\n    \"status\": \"{{new_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/todos/{{todo_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"todos",
+										"{{todo_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update todo",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains all required fields\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"user_id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"title\");\r",
+											"    pm.expect(jsonData).to.have.property(\"due_on\");\r",
+											"    pm.expect(jsonData).to.have.property(\"status\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains the same post id, user id , and other values that were provided\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.id).to.be.equals(pm.variables.get(\"todo_id\"));\r",
+											"    pm.expect(jsonData.user_id).to.be.equals(pm.variables.get(\"user_id\"));\r",
+											"    pm.expect(jsonData.title).to.be.equals(pm.variables.get(\"new_title\"));\r",
+											"    pm.expect(jsonData.due_on).to.be.equals(pm.variables.get(\"new_due_on\"));\r",
+											"    pm.expect(jsonData.status).to.be.equals(pm.variables.get(\"new_status\"));\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Create new_title for todo\r",
+											"const new_title = `Do exercise`;\r",
+											"pm.variables.set(\"new_title\", new_title);\r",
+											"\r",
+											"// Create new_due_on for todo\r",
+											"const new_due_on = `2023-09-09T00:00:00.000+05:30`;\r",
+											"pm.variables.set(\"new_due_on\", new_due_on);\r",
+											"\r",
+											"// Create new_status for todo\r",
+											"const new_status = `pending`;\r",
+											"pm.variables.set(\"new_status\", new_status);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"{{new_title}}\",\r\n    \"due_on\": \"{{new_due_on}}\",\r\n    \"status\": \"{{new_status}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/todos/{{todo_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"todos",
+										"{{todo_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete todo",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/todos/{{todo_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"todos",
+										"{{todo_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get todo",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains message field\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response contains message field\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"message\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Validate error message\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.message).to.be.equal(\"Resource not found\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/public/v2/todos/{{todo_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"todos",
+										"{{todo_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "ef6ebbbce5e9ea308498dae82ba0895f366bed8f667d5ad7c10a84f45a202ece",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://gorest.co.in",
+			"type": "string"
+		},
+		{
+			"key": "new_user_name",
+			"value": "Bobby Tables",
+			"type": "string"
+		},
+		{
+			"key": "new_user_gender",
+			"value": "male",
+			"type": "string"
+		},
+		{
+			"key": "new_user_status",
+			"value": "active",
+			"type": "string"
+		},
+		{
+			"key": "new_post_title",
+			"value": "title 1",
+			"type": "string"
+		},
+		{
+			"key": "new_post_body",
+			"value": "body",
+			"type": "string"
+		},
+		{
+			"key": "new_comment_name",
+			"value": "John Miller",
+			"type": "string"
+		},
+		{
+			"key": "new_comment_email",
+			"value": "my@email.com",
+			"type": "string"
+		},
+		{
+			"key": "new_comment_body",
+			"value": "I like pizza",
+			"type": "string"
+		},
+		{
+			"key": "new_todo_title",
+			"value": "Pay Rent",
+			"type": "string"
+		},
+		{
+			"key": "new_todo_due_on",
+			"value": "2023-12-12T00:00:00.000+05:30",
+			"type": "string"
+		},
+		{
+			"key": "new_todo_status",
+			"value": "pending",
+			"type": "string"
+		}
+	]
+}
