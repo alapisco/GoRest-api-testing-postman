@@ -19,8 +19,11 @@ Tests for the `users endpoint` also include
 ## Table of Contents
 
 1. [Running the Tests](#running-the-tests)
-    -  [Postman](#postman)
-    -  [Newman](#newman)
+    - [Postman](#postman)
+    - [Newman](#newman)
+    - [CI/CD](#postman)
+        - [CLI Reports](#postman)
+        - [HTML Reports](#postman)
 2. [The GoRest API Testing collection](#the-gorest-api-testing-collection)
     -  [Functional Testing](#functional-testing)
         - [Users CRUD](#users-crud)
@@ -89,6 +92,39 @@ The results of all tests and requests can be exported into a file. Use the JSON 
 newman run mycollection.json --reporters cli,json --reporter-json-export outputfile.json
 ```
 
+### CI/CD
+
+The` Postman collection` is setup in a `CI/CD` step in `GitHub Actions`. Every time there is an update to the repository or if it is requested manually, the tests will run.
+
+It is setup in an `Ubuntu` runner in a `GitHub hosted runner`
+
+The worlflow installs `NodeJs`, `Newman` , and an `html reporter` to run the api tests.
+
+After execution you can see the `test execution reports` in the build output and there is also a more detailed `HTML Report` deployed to `GitHub Pages`
+
+
+#### CLI Reports
+
+A test execution report , that is displaye in the console , is displayed during execution.
+
+To see this report:
+ - Go to the [Actions](https://github.com/alapisco/GoRest-api-testing-postman/actions) section of this repository
+
+ - Select the [Run API Tests CI](https://github.com/alapisco/GoRest-api-testing-postman/actions/workflows/run-tests.yml) workflow in the left menu 
+
+- Click on any workflow run
+
+- Click the build section
+
+- Expand the `Run Postman Collection` section
+
+#### HTML Reports
+
+Everytime that the workflow is executed, an html report is created an deployed on GitHub Pages of this repository
+
+The` GitHub Pages` of this repository is found [here](https://alapisco.github.io/GoRest-api-testing-postman)
+
+The specific url of each execution can be seen in the `Report URL` section inside the `build` section of every workflow run
 
 ## The `GoRest API Testing` collection
 
@@ -182,4 +218,4 @@ not existing fields
 
 ### Create User
 
-Contains negative tests for empty, invalid values, or special characters used when creating a user
+Contains negative tests for empty, invalid values, and special characters used when creating a user
