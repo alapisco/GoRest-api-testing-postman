@@ -1625,6 +1625,243 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Users - Pagination",
+					"item": [
+						{
+							"name": "Get users with pagination",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Pagination headers are present\", function () {\r",
+											"    pm.response.to.have.header(\"X-Pagination-Total\");\r",
+											"    pm.response.to.have.header(\"X-Pagination-Pages\");\r",
+											"    pm.response.to.have.header(\"X-Pagination-Page\");\r",
+											"    pm.response.to.have.header(\"X-Pagination-Limit\");\r",
+											"});\r",
+											"\r",
+											"// est if the returned results per page match the requested 'per_page' parameter:\r",
+											"pm.test(\"Results per page match requested 'per_page'\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    const requestedPerPage = parseInt(pm.request.url.query.get(\"per_page\"));\r",
+											"    pm.expect(jsonData.length).to.be.at.most(requestedPerPage);\r",
+											"});\r",
+											"\r",
+											"// Test if the returned page number matches the requested 'page' parameter:\r",
+											"pm.test(\"Returned page number matches requested 'page'\", function () {\r",
+											"    const requestedPage = parseInt(pm.request.url.query.get(\"page\"));\r",
+											"    const returnedPage = parseInt(pm.response.headers.get(\"X-Pagination-Page\"));\r",
+											"    pm.expect(returnedPage).to.equal(requestedPage);\r",
+											"});\r",
+											"\r",
+											"\r",
+											"//Test if the total number of pages is correct based on the total number of results and results per page:\r",
+											"pm.test(\"Total number of pages is correct\", function () {\r",
+											"    const totalResults = parseInt(pm.response.headers.get(\"X-Pagination-Total\"));\r",
+											"    const resultsPerPage = parseInt(pm.response.headers.get(\"X-Pagination-Limit\"));\r",
+											"    const totalPages = parseInt(pm.response.headers.get(\"X-Pagination-Pages\"));\r",
+											"    const expectedTotalPages = Math.ceil(totalResults / resultsPerPage);\r",
+											"    pm.expect(totalPages).to.equal(expectedTotalPages);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/public/v2/users?page=2&per_page=20",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"public",
+										"v2",
+										"users"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2"
+										},
+										{
+											"key": "per_page",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Negative Testing",
+			"item": [
+				{
+					"name": "Users",
+					"item": [
+						{
+							"name": "Pagination",
+							"item": [
+								{
+									"name": "Get total pages",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var totalPages = parseInt(pm.response.headers.get(\"X-Pagination-Pages\"));\r",
+													"\r",
+													"var exceeded_page_number = totalPages + 1;\r",
+													"pm.environment.set(\"exceeded_page_number\", exceeded_page_number);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/public/v2/users",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Request page number > max",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Requesting a page number greater than total pages returns an empty array\", function () {\r",
+													"    const totalPages = parseInt(pm.response.headers.get(\"X-Pagination-Pages\"));\r",
+													"    const requestedPage = parseInt(pm.request.url.query.get(\"page\"));\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData).to.be.an('array').that.is.empty;\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/public/v2/users?page={{exceeded_page_number}}",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"public",
+												"v2",
+												"users"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "{{exceeded_page_number}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
 				}
 			]
 		}
